@@ -2,6 +2,12 @@
 
 A collaborative multiple player online game where YOU can be a dung hero by collecting all the dung created by the animals.
 
+## `yarn dev`
+
+* http://localhost:8080
+
+## `yarn lint`
+
 
 ## Credits
 

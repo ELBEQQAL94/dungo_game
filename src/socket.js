@@ -7,6 +7,7 @@ const getRandomLocation = () => {
 };
 module.exports = server => {
   const io = socketIO(server);
+  const clients = {};
   const gameState = {
     dungCollected: 0,
     animals: [
@@ -96,13 +97,20 @@ module.exports = server => {
   };
 
   io.on("connection", (socket) => {
+    clients[socket.id] = true;
     socket.on('collect-dung', ({ id }) => {
-      gameState.dungCollected += 1;
-      gameState.dungs = gameState.dungs.filter((dung) => dung.id !== id);
-      gameState.dungs.push({
-        id: gameState.dungs[gameState.dungs.length - 1].id + 1,
-        location: getRandomLocation(), 
-      });
+      const dungIndex = gameState.dungs.findIndex((dung) => dung.id === id);
+      if(dungIndex !== -1) {
+        gameState.dungs.splice(dungIndex, 1);
+        gameState.dungCollected += 1;
+        gameState.dungs.push({
+          id: gameState.dungs[gameState.dungs.length - 1].id + 1,
+          location: getRandomLocation(), 
+        });
+      };
+    });
+    socket.on('disconnect', () => {
+      delete clients[socket.id];
     });
   });
 
